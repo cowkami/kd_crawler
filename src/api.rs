@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use reqwest::Url;
 use std::error::Error;
 struct KdUrl {
@@ -17,6 +18,13 @@ impl KdUrl {
     }
     fn kaisai(self) -> Result<KdUrl, Box<dyn Error>> {
         let url = self.url.join("kaisai")?;
+        Ok(Self {
+            url: Url::parse(url.as_str())?,
+        })
+    }
+    fn date(self, date: NaiveDate) -> Result<KdUrl, Box<dyn Error>> {
+        let date_str = date.format("%Y/%m/%d").to_string();
+        let url = self.url.join(date_str.as_str())?;
         Ok(Self {
             url: Url::parse(url.as_str())?,
         })
@@ -50,6 +58,14 @@ mod kdurl_tests {
         assert_eq!(
             KdUrl::new().unwrap().kaisai().unwrap().url.as_str(),
             "https://keirin.kdreams.jp/kaisai"
+        )
+    }
+    #[test]
+    fn date() {
+        let date = NaiveDate::from_ymd(2022, 5, 16);
+        assert_eq!(
+            KdUrl::new().unwrap().date(date).unwrap().url.as_str(),
+            "https://keirin.kdreams.jp/2022/05/16"
         )
     }
 }
