@@ -22,6 +22,12 @@ impl KdUrl {
             url: Url::parse(url.as_str())?,
         })
     }
+    fn schedule(self) -> Result<KdUrl, Box<dyn Error>> {
+        let url = self.url.join("schedule")?;
+        Ok(Self {
+            url: Url::parse(url.as_str())?,
+        })
+    }
     fn date(self, date: NaiveDate) -> Result<KdUrl, Box<dyn Error>> {
         let date_str = date.format("%Y/%m/%d").to_string();
         let url = self.url.join(date_str.as_str())?;
@@ -60,6 +66,14 @@ mod kdurl_tests {
             "https://keirin.kdreams.jp/kaisai"
         )
     }
+    #[test]
+    fn schedule() {
+        assert_eq!(
+            KdUrl::new().unwrap().schedule().unwrap().url.as_str(),
+            "https://keirin.kdreams.jp/schedule"
+        )
+    }
+
     #[test]
     fn date() {
         let date = NaiveDate::from_ymd(2022, 5, 16);
