@@ -1,5 +1,5 @@
 mod api;
-use reqwest::Result;
+use anyhow::Result;
 
 #[tokio::main]
 async fn main() -> Result<()> {
