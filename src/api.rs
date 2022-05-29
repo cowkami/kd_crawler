@@ -1,6 +1,9 @@
 use anyhow::Result;
 use chrono::NaiveDate;
 use reqwest::Url;
+use select::document::Document;
+use select::predicate::Predicate;
+
 struct KdUrl {
     url: Url,
 }
@@ -37,20 +40,21 @@ impl KdUrl {
     }
 }
 
-struct KdApi {
+pub struct KdApi {
     base_url: KdUrl,
 }
 
 impl KdApi {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             base_url: KdUrl::new().unwrap(),
         }
     }
-    async fn get_race_by_date(self, date: NaiveDate) -> Result<String> {
+    pub async fn get_race_by_date(self, date: NaiveDate) -> Result<Document> {
         let url = self.base_url.kaisai()?.date(date)?.url;
         let body = reqwest::get(url).await?.text().await?;
-        Ok(body)
+        let html = Document::from(body.as_str());
+        Ok(html)
     }
 }
 
